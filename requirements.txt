@@ -1,6 +1,12 @@
 diffusers==0.15.0
 transformers
 opencv-python
-einops
+einops~=0.8.1
 omegaconf
 pytorch_lightning
+numpy~=2.2.5
+pillow~=11.2.1
+torch~=2.7.0
+torchvision~=0.22.0
+pytorch-lightning~=2.5.1
+tqdm~=4.67.1
