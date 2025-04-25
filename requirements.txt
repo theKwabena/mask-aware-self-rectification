@@ -4,9 +4,9 @@ opencv-python
 einops~=0.8.1
 omegaconf
 pytorch_lightning
-numpy~=1.26.4
+numpy~=2.2.5
 pillow~=11.2.1
-torch~=2.2.0
-torchvision
+torch~=2.7.0
+torchvision~=0.22.0
 pytorch-lightning~=2.5.1
 tqdm~=4.67.1
