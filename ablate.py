@@ -11,7 +11,6 @@ from masactrl.masactrl_utils import regiter_attention_editor_diffusers, Attentio
 import argparse
 
 
-
 device = torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu")
 
 def load_image(image_path, res, device):
@@ -57,12 +56,12 @@ def run_pipeline(sample_id, use_mask):
     start_code_ref, latents_list_ref = model.invert(ref_images, [""] * ref_num, num_inference_steps=50, return_intermediates=True)
     _, latents_list_target_self = model.invert(target_image, "", num_inference_steps=50, return_intermediates=True)
 
-    editor = MutualSelfAttentionControlInversion(P1, 10, ref_num=1, masks=[target_mask]*ref_num if use_mask else None)
+    editor = MutualSelfAttentionControlInversion(P1, 10, ref_num=1, mask=target_mask if use_mask else None)
     regiter_attention_editor_diffusers(model, editor)
     start_code_tgt, _ = model.invert(target_image, "", num_inference_steps=50, return_intermediates=True, ref_intermediate_latents=latents_list_target_self)
     start_code = torch.cat([start_code_ref, start_code_tgt])
 
-    editor = MutualSelfAttentionControl(S1, 10, ref_num=ref_num, masks=[target_mask]*ref_num if use_mask else None)
+    editor = MutualSelfAttentionControl(S1, 10, ref_num=ref_num, mask=target_mask if use_mask else None)
     regiter_attention_editor_diffusers(model, editor)
     image_masactrl = model([""] * (ref_num) + [""], latents=start_code, ref_intermediate_latents=latents_list_ref)
     save_image(image_masactrl[-1:], os.path.join(out_dir, 'result_01.jpg'))
@@ -71,12 +70,12 @@ def run_pipeline(sample_id, use_mask):
     regiter_attention_editor_diffusers(model, editor)
     target_image = load_image(os.path.join(out_dir, 'result_01.jpg'), 512, device)
 
-    editor = MutualSelfAttentionControlInversion(P2, 10, ref_num=1, masks=[target_mask]*ref_num if use_mask else None)
+    editor = MutualSelfAttentionControlInversion(P2, 10, ref_num=1, mask=target_mask if use_mask else None)
     regiter_attention_editor_diffusers(model, editor)
     start_code_tgt, _ = model.invert(target_image, "", num_inference_steps=50, return_intermediates=True, ref_intermediate_latents=latents_list_target_self)
     start_code = torch.cat([start_code_ref, start_code_tgt])
 
-    editor = MutualSelfAttentionControl(S2, 10, ref_num=ref_num, masks=[target_mask]*ref_num if use_mask else None)
+    editor = MutualSelfAttentionControl(S2, 10, ref_num=ref_num, mask=target_mask if use_mask else None)
     regiter_attention_editor_diffusers(model, editor)
     image_masactrl = model([""] * (ref_num) + [""], latents=start_code, ref_intermediate_latents=latents_list_ref)
     save_image(image_masactrl[-1:], os.path.join(out_dir, 'result_02.jpg'))
@@ -90,3 +89,4 @@ if __name__ == "__main__":
 
     run_pipeline(args.id, use_mask=False)
     run_pipeline(args.id, use_mask=True)
+
