@@ -3,13 +3,14 @@ from einops import rearrange
 
 from .masactrl_utils import AttentionBase
 
-
+# ---------------------------------------------------
 class MutualSelfAttentionControl(AttentionBase):
     MODEL_TYPE = {
         "SD": 16,
         "SDXL": 70
     }
 
+    # ---------------------------------------------------
     def __init__(self, start_step=4, start_layer=10, ref_num=1, mask=None, layer_idx=None, step_idx=None, total_steps=50, model_type="SD"):
         super().__init__()
         self.total_steps = total_steps
@@ -24,6 +25,7 @@ class MutualSelfAttentionControl(AttentionBase):
         print("MasaCtrl at U-Net layers: ", self.layer_idx)
         print("ref_num = ", self.ref_num)
 
+    # ---------------------------------------------------
     def apply_mask(self, tensor, num_heads):
         if self.mask is None:
             return tensor
@@ -46,6 +48,7 @@ class MutualSelfAttentionControl(AttentionBase):
         out = rearrange(out, "h (b n) d -> b n (h d)", b=b)
         return out
 
+    # ---------------------------------------------------
     def forward(self, q, k, v, sim, attn, is_cross, place_in_unet, num_heads, **kwargs):
         if is_cross or self.cur_step not in self.step_idx or self.cur_att_layer // 2 not in self.layer_idx:
             return super().forward(q, k, v, sim, attn, is_cross, place_in_unet, num_heads, **kwargs)
